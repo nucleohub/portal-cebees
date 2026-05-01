@@ -1,0 +1,39 @@
+node_modules/
+dist/
+build/
+coverage/
+.env
+.env.local
+.env.*.local
+*.log
+.DS_Store
+.idea/
+.vscode/
+!.vscode/extensions.json
+!.vscode/settings.json.example
+*.tsbuildinfo
+.turbo/
+.cache/
+.parcel-cache/
+
+# API artifacts
+apps/api/uploads/
+apps/api/tmp/
+
+# Web artifacts
+apps/web/dist/
+apps/web/.vite/
+
+# Docker volumes
+infra/docker/volumes/
+
+# Terraform
+infra/terraform/.terraform/
+infra/terraform/*.tfstate*
+infra/terraform/.terraform.lock.hcl
+
+# Vercel
+.vercel/
+
+# Patch scripts output
+apps/api/src/db/patch-prod-data.ts

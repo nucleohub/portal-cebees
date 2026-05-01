@@ -1,0 +1,5 @@
+{
+  "autoUpdatesChannel": "latest",
+  "skipDangerousModePermissionPrompt": true,
+  "autoAcceptAll": true
+}
