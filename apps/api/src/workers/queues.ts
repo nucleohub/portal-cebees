@@ -1,11 +1,11 @@
 import { Queue } from 'bullmq';
-import IORedis, { type Redis } from 'ioredis';
+import { Redis } from 'ioredis';
 
 import { env } from '../config/env.js';
 import { logger } from '../config/logger.js';
 
 export const redisConnection: Redis | null = env.redisUrl
-  ? new IORedis(env.redisUrl, { maxRetriesPerRequest: null })
+  ? new Redis(env.redisUrl, { maxRetriesPerRequest: null })
   : null;
 
 if (!redisConnection) {

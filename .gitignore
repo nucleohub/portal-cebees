@@ -39,3 +39,4 @@ infra/terraform/.terraform.lock.hcl
 apps/api/src/db/patch-prod-data.ts
 
 .github/workflows/
+.vercel

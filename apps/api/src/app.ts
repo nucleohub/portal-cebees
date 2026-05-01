@@ -8,7 +8,8 @@ import express from 'express';
 import rateLimit from 'express-rate-limit';
 import helmet from 'helmet';
 import hpp from 'hpp';
-import pinoHttp from 'pino-http';
+// eslint-disable-next-line @typescript-eslint/no-require-imports
+const pinoHttp = (await import('pino-http')).default;
 
 import { env } from './config/env.js';
 import { logger } from './config/logger.js';
