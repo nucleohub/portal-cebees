@@ -232,7 +232,7 @@ void Usuario;
 async function shutdown(): Promise<void> {
   logger.info('Shutting down workers...');
   await Promise.all(workers.map((w) => w.close()));
-  await redisConnection.quit();
+  await redisConnection?.quit();
   process.exit(0);
 }
 

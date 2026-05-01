@@ -7,8 +7,8 @@ import type { FormacaoDto } from '@cebees/shared-types';
 import { ProfessorStatus } from '@cebees/shared-types';
 
 export class Professor extends Model<
-  InferAttributes<Professor>,
-  InferCreationAttributes<Professor>
+  InferAttributes<Professor, { omit: 'cpf' | 'rg' }>,
+  InferCreationAttributes<Professor, { omit: 'cpf' | 'rg' }>
 > {
   declare id: CreationOptional<number>;
   declare nomeCompleto: string;
