@@ -1,6 +1,8 @@
 node_modules/
 dist/
 build/
+# Keep shared-types compiled output so Vercel Lambda can resolve it at runtime
+!packages/shared-types/dist/
 coverage/
 .env
 .env.local
