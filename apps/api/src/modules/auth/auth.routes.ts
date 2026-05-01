@@ -10,7 +10,7 @@ import { login, refresh } from './AuthService.js';
 export const authRouter = Router();
 
 const loginSchema = Joi.object({
-  email: Joi.string().email().required(),
+  email: Joi.string().email({ tlds: { allow: false } }).required(),
   senha: Joi.string().min(6).required(),
 });
 
