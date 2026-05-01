@@ -37,3 +37,5 @@ infra/terraform/.terraform.lock.hcl
 
 # Patch scripts output
 apps/api/src/db/patch-prod-data.ts
+
+.github/workflows/
