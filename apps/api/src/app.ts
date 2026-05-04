@@ -27,6 +27,7 @@ import { disponibilidadeRouter } from './modules/match/interface/http/disponibil
 import { especialidadeRouter } from './modules/match/interface/http/especialidade.routes.js';
 import { professorRouter } from './modules/match/interface/http/professor.routes.js';
 import { turmaRouter } from './modules/match/interface/http/turma.routes.js';
+import { projetoRouter } from './modules/projeto/interface/http/projeto.routes.js';
 
 initSentry();
 
@@ -83,6 +84,7 @@ app.get('/metrics', async (_req, res) => {
 app.use(audit);
 
 app.use('/api/v1/auth', authRouter);
+app.use('/api/v1/projetos', projetoRouter);
 app.use('/api/v1/professores', professorRouter);
 app.use('/api/v1/especialidades', especialidadeRouter);
 app.use('/api/v1', disponibilidadeRouter);

@@ -83,4 +83,16 @@ export declare const ClassificacaoDado: {
     readonly CRITICO: "CRITICO";
 };
 export type ClassificacaoDado = (typeof ClassificacaoDado)[keyof typeof ClassificacaoDado];
+export declare const ProjetoTipo: {
+    /** Projeto gerido diretamente pela CEBEES */
+    readonly INTERNO: "INTERNO";
+    /** Ambiente com branding próprio (ex.: CBMF) gerido dentro da mesma plataforma */
+    readonly SUB_AMBIENTE: "SUB_AMBIENTE";
+};
+export type ProjetoTipo = (typeof ProjetoTipo)[keyof typeof ProjetoTipo];
+export declare const ProjetoStatus: {
+    readonly ATIVO: "ATIVO";
+    readonly INATIVO: "INATIVO";
+};
+export type ProjetoStatus = (typeof ProjetoStatus)[keyof typeof ProjetoStatus];
 //# sourceMappingURL=enums.d.ts.map

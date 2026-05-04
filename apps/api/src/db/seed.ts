@@ -12,6 +12,7 @@ import {
   Especialidade,
   Professor,
   ProfessorEspecialidade,
+  Projeto,
   Turma,
   Usuario,
 } from './models/index.js';
@@ -198,9 +199,20 @@ async function seed(): Promise<void> {
     }
   }
 
+  // Resolve project IDs — created by migration 013
+  const [projCursosLivres, projCbmf] = await Promise.all([
+    Projeto.findOne({ where: { codigo: 'CURSOS_LIVRES' } }),
+    Projeto.findOne({ where: { codigo: 'CBMF' } }),
+  ]);
+
+  if (!projCursosLivres || !projCbmf) {
+    throw new Error('Projetos bootstrap não encontrados. Execute as migrations primeiro.');
+  }
+
   await Turma.create({
     codigo: 'NR10-2026-001',
     nome: 'NR-10 Turma 001/2026',
+    projetoId: projCursosLivres.id,
     disciplinaId: nr10.id,
     tipoCurso: TipoCurso.FORMACAO_PROFISSIONAL,
     cargaHorariaTotal: 40,
@@ -217,6 +229,7 @@ async function seed(): Promise<void> {
   await Turma.create({
     codigo: 'BC-2026-001',
     nome: 'Bombeiro Civil 001/2026',
+    projetoId: projCbmf.id,
     disciplinaId: bombeirosCivil.id,
     tipoCurso: TipoCurso.CBMF,
     cargaHorariaTotal: 160,

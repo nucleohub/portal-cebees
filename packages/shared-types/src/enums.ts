@@ -94,3 +94,17 @@ export const ClassificacaoDado = {
   CRITICO: 'CRITICO',
 } as const;
 export type ClassificacaoDado = (typeof ClassificacaoDado)[keyof typeof ClassificacaoDado];
+
+export const ProjetoTipo = {
+  /** Projeto gerido diretamente pela CEBEES */
+  INTERNO: 'INTERNO',
+  /** Ambiente com branding próprio (ex.: CBMF) gerido dentro da mesma plataforma */
+  SUB_AMBIENTE: 'SUB_AMBIENTE',
+} as const;
+export type ProjetoTipo = (typeof ProjetoTipo)[keyof typeof ProjetoTipo];
+
+export const ProjetoStatus = {
+  ATIVO: 'ATIVO',
+  INATIVO: 'INATIVO',
+} as const;
+export type ProjetoStatus = (typeof ProjetoStatus)[keyof typeof ProjetoStatus];

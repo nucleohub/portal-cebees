@@ -1,4 +1,5 @@
 export * from './enums.js';
+export * from './dto/projeto.js';
 export * from './dto/professor.js';
 export * from './dto/especialidade.js';
 export * from './dto/disponibilidade.js';

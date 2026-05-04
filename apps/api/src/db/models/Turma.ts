@@ -12,6 +12,7 @@ import { sequelize } from '../sequelize.js';
 
 export class Turma extends Model<InferAttributes<Turma>, InferCreationAttributes<Turma>> {
   declare id: CreationOptional<number>;
+  declare projetoId: number;
   declare codigo: string;
   declare nome: string;
   declare disciplinaId: number;
@@ -30,6 +31,7 @@ export class Turma extends Model<InferAttributes<Turma>, InferCreationAttributes
 Turma.init(
   {
     id: { type: DataTypes.INTEGER, autoIncrement: true, primaryKey: true },
+    projetoId: { type: DataTypes.INTEGER, allowNull: false, field: 'projeto_id' },
     codigo: { type: DataTypes.STRING(30), allowNull: false, unique: true },
     nome: { type: DataTypes.STRING(200), allowNull: false },
     disciplinaId: { type: DataTypes.INTEGER, allowNull: false, field: 'disciplina_id' },

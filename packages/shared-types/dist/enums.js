@@ -72,4 +72,14 @@ export const ClassificacaoDado = {
     SENSIVEL: 'SENSIVEL',
     CRITICO: 'CRITICO',
 };
+export const ProjetoTipo = {
+    /** Projeto gerido diretamente pela CEBEES */
+    INTERNO: 'INTERNO',
+    /** Ambiente com branding próprio (ex.: CBMF) gerido dentro da mesma plataforma */
+    SUB_AMBIENTE: 'SUB_AMBIENTE',
+};
+export const ProjetoStatus = {
+    ATIVO: 'ATIVO',
+    INATIVO: 'INATIVO',
+};
 //# sourceMappingURL=enums.js.map

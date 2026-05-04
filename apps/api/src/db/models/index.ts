@@ -6,6 +6,7 @@ import { Disponibilidade } from './Disponibilidade.js';
 import { Especialidade, ProfessorEspecialidade } from './Especialidade.js';
 import { HistoricoAtuacao } from './HistoricoAtuacao.js';
 import { Professor } from './Professor.js';
+import { Projeto } from './Projeto.js';
 import { Turma } from './Turma.js';
 import { Usuario } from './Usuario.js';
 
@@ -45,6 +46,14 @@ Especialidade.belongsToMany(Disciplina, {
   as: 'disciplinas',
 });
 
+// Projeto self-reference (sub-ambiente → projeto pai)
+Projeto.belongsTo(Projeto, { foreignKey: 'ambientePaiId', as: 'ambientePai' });
+Projeto.hasMany(Projeto, { foreignKey: 'ambientePaiId', as: 'subAmbientes' });
+
+// Projeto → Turma
+Turma.belongsTo(Projeto, { foreignKey: 'projetoId', as: 'projeto' });
+Projeto.hasMany(Turma, { foreignKey: 'projetoId', as: 'turmas' });
+
 Turma.belongsTo(Disciplina, { foreignKey: 'disciplinaId', as: 'disciplina' });
 Disciplina.hasMany(Turma, { foreignKey: 'disciplinaId', as: 'turmas' });
 
@@ -79,6 +88,7 @@ export {
   HistoricoAtuacao,
   Professor,
   ProfessorEspecialidade,
+  Projeto,
   Turma,
   Usuario,
 };
