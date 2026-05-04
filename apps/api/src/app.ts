@@ -13,6 +13,7 @@ import { pinoHttp } from 'pino-http';
 import { env } from './config/env.js';
 import { logger } from './config/logger.js';
 import { metricsMiddleware, registry } from './config/metrics.js';
+import { startBoss } from './config/pgboss.js';
 import { Sentry, initSentry } from './config/sentry.js';
 import { sequelize } from './db/sequelize.js';
 import './db/models/index.js';
@@ -28,8 +29,15 @@ import { especialidadeRouter } from './modules/match/interface/http/especialidad
 import { professorRouter } from './modules/match/interface/http/professor.routes.js';
 import { turmaRouter } from './modules/match/interface/http/turma.routes.js';
 import { projetoRouter } from './modules/projeto/interface/http/projeto.routes.js';
+import { registerWorkers } from './workers/index.js';
 
 initSentry();
+
+// Start pg-boss and register workers non-blocking so the HTTP server is not
+// delayed.  Errors are logged but do not crash the process.
+void startBoss()
+  .then((boss) => registerWorkers(boss))
+  .catch((err) => logger.error({ err }, 'pg-boss startup failed'));
 
 export const app = express();
 

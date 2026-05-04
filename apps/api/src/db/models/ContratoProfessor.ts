@@ -18,6 +18,7 @@ export class ContratoProfessor extends Model<
   declare numero: string;
   declare alocacaoId: number;
   declare professorId: number;
+  declare projetoId: number | null;
   declare valorHora: number;
   declare cargaHoraria: number;
   declare valorTotal: number;
@@ -37,6 +38,7 @@ ContratoProfessor.init(
     numero: { type: DataTypes.STRING(30), allowNull: false, unique: true },
     alocacaoId: { type: DataTypes.INTEGER, allowNull: false, unique: true, field: 'alocacao_id' },
     professorId: { type: DataTypes.INTEGER, allowNull: false, field: 'professor_id' },
+    projetoId: { type: DataTypes.INTEGER, allowNull: true, field: 'projeto_id' },
     valorHora: { type: DataTypes.DECIMAL(10, 2), allowNull: false, field: 'valor_hora' },
     cargaHoraria: { type: DataTypes.INTEGER, allowNull: false, field: 'carga_horaria' },
     valorTotal: { type: DataTypes.DECIMAL(12, 2), allowNull: false, field: 'valor_total' },

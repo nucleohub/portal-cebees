@@ -6,6 +6,7 @@ import { TipoCurso, TurmaStatus } from '@cebees/shared-types';
 import { NotFoundError } from '../../../../config/errors.js';
 import { Disciplina, Turma } from '../../../../db/models/index.js';
 import { authRequired } from '../../../../middleware/auth.js';
+import { projetoContext } from '../../../../middleware/projetoContext.js';
 import { requireCoordenador, requireSecretaria } from '../../../../middleware/rbac.js';
 import { validate } from '../../../../middleware/validate.js';
 
@@ -79,11 +80,26 @@ turmaRouter.get('/:id(\\d+)', requireSecretaria, async (req, res, next) => {
   }
 });
 
-turmaRouter.post('/', requireCoordenador, validate(createSchema), async (req, res, next) => {
-  try {
-    const turma = await Turma.create({ ...req.body, status: TurmaStatus.PLANEJADA });
-    res.status(201).json(turma);
-  } catch (e) {
-    next(e);
-  }
-});
+/**
+ * POST /api/v1/turmas
+ * Requires X-Projeto-Id header — projetoContext resolves and validates it,
+ * then sets req.projetoContext so we can pass projetoId to Turma.create().
+ */
+turmaRouter.post(
+  '/',
+  requireCoordenador,
+  projetoContext,
+  validate(createSchema),
+  async (req, res, next) => {
+    try {
+      const turma = await Turma.create({
+        ...req.body,
+        projetoId: req.projetoContext!.projetoId,
+        status: TurmaStatus.PLANEJADA,
+      });
+      res.status(201).json(turma);
+    } catch (e) {
+      next(e);
+    }
+  },
+);

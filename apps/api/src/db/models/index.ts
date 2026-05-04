@@ -54,6 +54,14 @@ Projeto.hasMany(Projeto, { foreignKey: 'ambientePaiId', as: 'subAmbientes' });
 Turma.belongsTo(Projeto, { foreignKey: 'projetoId', as: 'projeto' });
 Projeto.hasMany(Turma, { foreignKey: 'projetoId', as: 'turmas' });
 
+// Projeto → Alocacao (nullable — derived from turma at creation time)
+Alocacao.belongsTo(Projeto, { foreignKey: 'projetoId', as: 'projeto' });
+Projeto.hasMany(Alocacao, { foreignKey: 'projetoId', as: 'alocacoes' });
+
+// Projeto → ContratoProfessor (nullable — derived from alocacao at creation time)
+ContratoProfessor.belongsTo(Projeto, { foreignKey: 'projetoId', as: 'projeto' });
+Projeto.hasMany(ContratoProfessor, { foreignKey: 'projetoId', as: 'contratos' });
+
 Turma.belongsTo(Disciplina, { foreignKey: 'disciplinaId', as: 'disciplina' });
 Disciplina.hasMany(Turma, { foreignKey: 'disciplinaId', as: 'turmas' });
 

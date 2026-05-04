@@ -1,16 +1,13 @@
-import { Queue } from 'bullmq';
-import { Redis } from 'ioredis';
+/**
+ * queues.ts — pg-boss job-send helpers.
+ *
+ * Replaces the former BullMQ/ioredis queue definitions.  Each helper simply
+ * sends a job to the named queue.  If pg-boss has not been started yet (e.g.
+ * during unit tests) the call is silently skipped.
+ */
+import type { PgBoss } from 'pg-boss';
 
-import { env } from '../config/env.js';
 import { logger } from '../config/logger.js';
-
-export const redisConnection: Redis | null = env.redisUrl
-  ? new Redis(env.redisUrl, { maxRetriesPerRequest: null })
-  : null;
-
-if (!redisConnection) {
-  logger.warn('REDIS_URL not set — background workers and queues are disabled');
-}
 
 export const QUEUE_NAMES = {
   contractGeneration: 'contract-generation',
@@ -19,35 +16,42 @@ export const QUEUE_NAMES = {
   notification: 'notification',
 } as const;
 
-export const contractGenerationQueue = redisConnection
-  ? new Queue(QUEUE_NAMES.contractGeneration, { connection: redisConnection })
-  : null;
-export const documentExpiryQueue = redisConnection
-  ? new Queue(QUEUE_NAMES.documentExpiry, { connection: redisConnection })
-  : null;
-export const performanceRecalcQueue = redisConnection
-  ? new Queue(QUEUE_NAMES.performanceRecalc, { connection: redisConnection })
-  : null;
-export const notificationQueue = redisConnection
-  ? new Queue(QUEUE_NAMES.notification, { connection: redisConnection })
-  : null;
+// Lazily resolved — avoids circular-import issues when queues.ts is imported
+// before pgboss.ts has been initialised.
+let _boss: PgBoss | null = null;
+
+export function setBoss(b: PgBoss): void {
+  _boss = b;
+}
+
+function getBossOrNull(): PgBoss | null {
+  return _boss;
+}
+
+// ---------------------------------------------------------------------------
+// Public send helpers
+// ---------------------------------------------------------------------------
 
 export async function enqueueContractGeneration(contratoId: number): Promise<void> {
-  if (!contractGenerationQueue) return;
-  await contractGenerationQueue.add('generate', { contratoId }, {
-    attempts: 3,
-    backoff: { type: 'exponential', delay: 5_000 },
-    removeOnComplete: 100,
-    removeOnFail: 500,
+  const b = getBossOrNull();
+  if (!b) {
+    logger.warn({ contratoId }, 'pg-boss not ready — contract-generation job skipped');
+    return;
+  }
+  await b.send(QUEUE_NAMES.contractGeneration, { contratoId }, {
+    retryLimit: 3,
+    retryDelay: 5,
+    retryBackoff: true,
+    expireInSeconds: 3600,
   });
 }
 
 export async function enqueuePerformanceRecalc(professorId: number): Promise<void> {
-  if (!performanceRecalcQueue) return;
-  await performanceRecalcQueue.add('recalc', { professorId }, {
-    attempts: 2,
-    removeOnComplete: 100,
-    removeOnFail: 200,
+  const b = getBossOrNull();
+  if (!b) return;
+  await b.send(QUEUE_NAMES.performanceRecalc, { professorId }, {
+    retryLimit: 2,
+    expireInSeconds: 7200,
   });
 }
 
@@ -55,12 +59,17 @@ export async function enqueueNotification(payload: {
   to: string;
   subject: string;
   body: string;
+  html?: string;
 }): Promise<void> {
-  if (!notificationQueue) return;
-  await notificationQueue.add('email', payload, {
-    attempts: 3,
-    backoff: { type: 'exponential', delay: 10_000 },
-    removeOnComplete: 200,
-    removeOnFail: 500,
+  const b = getBossOrNull();
+  if (!b) {
+    logger.warn({ to: payload.to }, 'pg-boss not ready — notification job skipped');
+    return;
+  }
+  await b.send(QUEUE_NAMES.notification, payload, {
+    retryLimit: 3,
+    retryDelay: 10,
+    retryBackoff: true,
+    expireInSeconds: 86400,
   });
 }

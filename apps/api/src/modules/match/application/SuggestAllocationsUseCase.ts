@@ -38,6 +38,7 @@ export interface SuggestResult {
 export async function suggestAllocations(
   turmaId: number,
   opts: SuggestOptions = {},
+  projetoId?: number,
 ): Promise<SuggestResult> {
   const ctx = await carregarTurmaComDisciplina(turmaId);
   if (!ctx) throw new NotFoundError('Turma', turmaId);
@@ -98,7 +99,7 @@ export async function suggestAllocations(
     matchSuggestionsTotal.inc({ tipo_curso: turma.tipoCurso });
   }
 
-  const idMap = await persistirSugestoes(turma.id, topo);
+  const idMap = await persistirSugestoes(turma.id, topo, projetoId);
 
   return {
     turmaId: turma.id,
@@ -267,6 +268,7 @@ function construirExplicacao(
 async function persistirSugestoes(
   turmaId: number,
   sugestoes: MatchSuggestion[],
+  projetoId?: number,
 ): Promise<Map<number, number>> {
   await Alocacao.destroy({
     where: { turmaId, status: AlocacaoStatus.SUGERIDA },
@@ -276,6 +278,7 @@ async function persistirSugestoes(
     const al = await Alocacao.create({
       turmaId,
       professorId: s.professorId,
+      projetoId: projetoId ?? null,
       status: AlocacaoStatus.SUGERIDA,
       scoreTotal: s.score.total,
       scoreBreakdown: s.score,

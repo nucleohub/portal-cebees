@@ -21,6 +21,7 @@ export class Professor extends Model<
   declare status: CreationOptional<ProfessorStatus>;
   declare formacoes: CreationOptional<FormacaoDto[]>;
   declare experienciaAnos: CreationOptional<number>;
+  declare valorHora: CreationOptional<number>;
   declare createdAt: CreationOptional<Date>;
   declare updatedAt: CreationOptional<Date>;
 
@@ -63,6 +64,12 @@ Professor.init(
       allowNull: false,
       defaultValue: 0,
       field: 'experiencia_anos',
+    },
+    valorHora: {
+      type: DataTypes.DECIMAL(10, 2),
+      allowNull: false,
+      defaultValue: 0,
+      field: 'valor_hora',
     },
     createdAt: { type: DataTypes.DATE, field: 'created_at' },
     updatedAt: { type: DataTypes.DATE, field: 'updated_at' },

@@ -14,6 +14,7 @@ export class Alocacao extends Model<InferAttributes<Alocacao>, InferCreationAttr
   declare id: CreationOptional<number>;
   declare turmaId: number;
   declare professorId: number;
+  declare projetoId: number | null;
   declare status: CreationOptional<AlocacaoStatus>;
   declare scoreTotal: number | null;
   declare scoreBreakdown: ScoreBreakdown | null;
@@ -34,6 +35,7 @@ Alocacao.init(
     id: { type: DataTypes.INTEGER, autoIncrement: true, primaryKey: true },
     turmaId: { type: DataTypes.INTEGER, allowNull: false, field: 'turma_id' },
     professorId: { type: DataTypes.INTEGER, allowNull: false, field: 'professor_id' },
+    projetoId: { type: DataTypes.INTEGER, allowNull: true, field: 'projeto_id' },
     status: {
       type: DataTypes.ENUM(...Object.values(AlocacaoStatus)),
       allowNull: false,

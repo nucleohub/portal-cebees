@@ -1,7 +1,7 @@
 import { AlocacaoStatus, MIN_AUTO_CONFIRM_SCORE } from '@cebees/shared-types';
 
 import { BusinessRuleViolation, NotFoundError } from '../../../config/errors.js';
-import { Alocacao, ContratoProfessor, Turma } from '../../../db/models/index.js';
+import { Alocacao, ContratoProfessor, Professor, Turma } from '../../../db/models/index.js';
 import { sequelize } from '../../../db/sequelize.js';
 import { assertTransicaoValida, podeConfirmar } from '../domain/Alocacao.js';
 import { calcularValorTotal, proximoNumeroContrato } from '../domain/Contrato.js';
@@ -18,6 +18,7 @@ export interface ConfirmResult {
   contrato: ContratoProfessor;
 }
 
+/** Fallback hourly rate when professor has no valorHora set and caller doesn't override. */
 const VALOR_HORA_PADRAO = 120;
 
 export async function confirmAllocation(input: ConfirmInput): Promise<ConfirmResult> {
@@ -43,6 +44,9 @@ export async function confirmAllocation(input: ConfirmInput): Promise<ConfirmRes
     const turma = await Turma.findByPk(alocacao.turmaId, { transaction: tx });
     if (!turma) throw new NotFoundError('Turma', alocacao.turmaId);
 
+    // Resolve professor to use their default valorHora as fallback (BLOCO 1 / TASK-019)
+    const professor = await Professor.findByPk(alocacao.professorId, { transaction: tx });
+
     alocacao.status = AlocacaoStatus.CONFIRMADA;
     alocacao.dataConfirmacao = new Date();
     alocacao.justificativa = input.justificativa ?? alocacao.justificativa;
@@ -57,7 +61,10 @@ export async function confirmAllocation(input: ConfirmInput): Promise<ConfirmRes
       transaction: tx,
     });
 
-    const valorHora = input.valorHora ?? VALOR_HORA_PADRAO;
+    // Precedence: caller override → professor.valorHora → hardcoded default
+    const valorHora =
+      input.valorHora ??
+      (professor && Number(professor.valorHora) > 0 ? Number(professor.valorHora) : VALOR_HORA_PADRAO);
     const cargaHoraria = turma.cargaHorariaTotal;
     const numero = await proximoNumeroContrato(sequelize);
 
@@ -66,6 +73,7 @@ export async function confirmAllocation(input: ConfirmInput): Promise<ConfirmRes
         numero,
         alocacaoId: alocacao.id,
         professorId: alocacao.professorId,
+        projetoId: alocacao.projetoId,
         valorHora,
         cargaHoraria,
         valorTotal: calcularValorTotal(valorHora, cargaHoraria),

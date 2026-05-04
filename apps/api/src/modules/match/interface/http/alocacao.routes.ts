@@ -6,6 +6,7 @@ import { AlocacaoStatus } from '@cebees/shared-types';
 
 import { Alocacao, ContratoProfessor } from '../../../../db/models/index.js';
 import { authRequired } from '../../../../middleware/auth.js';
+import { projetoContext } from '../../../../middleware/projetoContext.js';
 import { requireCoordenador, requireSecretaria } from '../../../../middleware/rbac.js';
 import { validate } from '../../../../middleware/validate.js';
 import { cancelAllocation } from '../../application/CancelAllocationUseCase.js';
@@ -43,10 +44,15 @@ alocacaoRouter.use(authRequired);
 alocacaoRouter.post(
   '/turmas/:id(\\d+)/suggest',
   requireCoordenador,
+  projetoContext,
   validate(suggestSchema),
   async (req, res, next) => {
     try {
-      const result = await suggestAllocations(Number(req.params.id), req.body);
+      const result = await suggestAllocations(
+        Number(req.params.id),
+        req.body,
+        req.projetoContext!.projetoId,
+      );
       res.json(result);
     } catch (e) {
       next(e);
